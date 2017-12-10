@@ -8,11 +8,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,7 +37,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private TessBaseAPI tessBaseApi;
     TextView textView;
     Uri outputFileUri;
-    private static final String lang = "eng";
+    Uri imageFileUri;
+    private static final String lang = "jpn";
     String result = "empty";
     private RequestPermissionsTool requestTool; //for API >=23 only
 
@@ -75,7 +77,9 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
 
             String img_path = IMGS_PATH + "/ocr.jpg";
 
-            outputFileUri = Uri.fromFile(new File(img_path));
+            imageFileUri = Uri.fromFile(new File(img_path));
+            outputFileUri = FileProvider.getUriForFile(MainActivity.this,
+                    getApplicationContext().getPackageName() + ".provider", new File(img_path));
 
             final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
@@ -101,7 +105,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
 
     private void doOCR() {
         prepareTesseract();
-        startOCR(outputFileUri);
+        startOCR(imageFileUri);
     }
 
     /**
